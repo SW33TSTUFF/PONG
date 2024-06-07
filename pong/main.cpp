@@ -120,6 +120,24 @@ int main () {
         player.Update();
         cpu.Update(ball.y);
 
+        if(CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, Rectangle{player.x, player.y, player.width, player.height})){
+            ball.speed_x *= -1;
+
+            // EXPERIMENTAL (FRICTION FOR PADDLE)
+            // if (ball.speed_y >= 0) {
+            //     if(IsKeyDown(KEY_UP)) {
+            //         ball.speed_y -= player.speed;
+            //     }
+            //     if(IsKeyDown(KEY_DOWN)) {
+            //         ball.speed_y += player.speed;
+            //     }
+            // }
+        }
+
+        if(CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, Rectangle{cpu.x, cpu.y, cpu.width, cpu.height})){
+            ball.speed_x *= -1;
+        }
+
         ClearBackground(BLACK);
 
         DrawLine(screen_width/2, 0, screen_width/2, screen_height, WHITE);
