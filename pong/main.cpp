@@ -3,6 +3,9 @@
 
 using namespace std;
 
+int player_score = 0;
+int cpu_score = 0;
+
 class Ball {
 public:
     float x, y;
@@ -21,10 +24,27 @@ public:
         {
             speed_y *= -1;
         }
-        if(x + radius >= GetScreenWidth() || x - radius <= 0)
+
+        if(x + radius + 25/2 >= GetScreenWidth())
         {
-            speed_x *= -1;
+            cpu_score++;
+            ResetBall();
         }
+
+        if(x - radius - 25/2 <= 0)
+        {
+            player_score++;
+            ResetBall();
+        }
+    }
+
+    void ResetBall() {
+        x = GetScreenWidth()/2;
+        y = GetScreenHeight()/2;
+
+        int speed_choices[2] = {-1, 1};
+        speed_x *= speed_choices[GetRandomValue(0,1)];
+        speed_y *= speed_choices[GetRandomValue(0,1)];
     }
 };
 
@@ -110,9 +130,9 @@ int main () {
     cpu.height = 120;
     cpu.x = 10;
     cpu.y = screen_height/2 - cpu.height/2;
-    cpu.speed = 12;
+    cpu.speed = 4;
 
-    while(WindowShouldClose() == false) {
+    while(WindowShouldClose() == false && cpu_score != 3 && player_score != 10) {
 
         BeginDrawing();
 
@@ -145,10 +165,21 @@ int main () {
         ball.Draw();
         cpu.Draw();
         player.Draw();
+        // DrawText(text, xpos, ypos, fontsize, WHITE);
+        DrawText(TextFormat("%i", cpu_score), screen_width/4 - 20, 20, 80, WHITE);
+        DrawText(TextFormat("%i", player_score), 3*screen_width/4 - 20, 20, 80, WHITE);
 
         EndDrawing();
 
     }
+    while(WindowShouldClose() == false) 
+    {
+        BeginDrawing();
+        ClearBackground(BLACK);
+        DrawText("GAME OVER", screen_width/2 - 170, screen_height/2, 50, WHITE);
+        EndDrawing();
+    }
+
 
     CloseWindow();
     return 0;
