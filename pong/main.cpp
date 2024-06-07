@@ -29,6 +29,18 @@ public:
 };
 
 class Paddle {
+protected:
+    void LimitMovement() 
+    {
+        if(y <= 0)
+        {
+            y = 0;
+        }
+
+        if(y + height >= GetScreenHeight()){
+            y = GetScreenHeight() - height;
+        }
+    }
 public:
     float x, y;
     float width, height;
@@ -49,20 +61,29 @@ public:
             y = y + speed;
         }
 
-        if(y <= 0)
-        {
-            y = 0;
-        }
+        LimitMovement();
+    }
+};
 
-        if(y + height >= GetScreenHeight()){
-            y = GetScreenHeight() - height;
+class CpuPaddle : public Paddle {
+public:
+    void Update(int ball_y) 
+    {
+        if(y + height/2 > ball_y)
+        {
+            y = y - speed;
         }
-        
+        if(y + height/2 <= ball_y)
+        {
+            y = y + speed;
+        }
+        LimitMovement();
     }
 };
 
 Ball ball;
 Paddle player;
+CpuPaddle cpu;
 
 int main () {
 
@@ -85,21 +106,28 @@ int main () {
     player.y = screen_height/2 - player.height/2;
     player.speed = 6;
 
+    cpu.width = 25;
+    cpu.height = 120;
+    cpu.x = 10;
+    cpu.y = screen_height/2 - cpu.height/2;
+    cpu.speed = 12;
+
     while(WindowShouldClose() == false) {
 
         BeginDrawing();
 
         ball.Update();
         player.Update();
+        cpu.Update(ball.y);
 
         ClearBackground(BLACK);
-        // Draw ball in the middle of the screen
-        ball.Draw();
-        
-        DrawRectangle(10, screen_height/2 - 60, 25, 120, WHITE);
-        // DrawRectangle(screen_width - (10 + 25), screen_height/2 - 60, 25, 120, WHITE);
+
         DrawLine(screen_width/2, 0, screen_width/2, screen_height, WHITE);
+
+        ball.Draw();
+        cpu.Draw();
         player.Draw();
+
         EndDrawing();
 
     }
